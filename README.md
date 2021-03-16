@@ -50,3 +50,5 @@ Run the development server
 yarn dev
 ```
 
+### License
+[MIT](https://github.com/RileySeaburg/next-webinar/blob/main/LICENSE)
