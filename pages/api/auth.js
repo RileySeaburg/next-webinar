@@ -1,7 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const bcrypt = require('bcrypt');
-const v4 = require('uuid').v4;
 const jwt = require('jsonwebtoken');
 const jwtSecret = 'SUPERSECRETE20220';
 
@@ -19,37 +18,23 @@ function findUser(db, email, callback) {
     collection.findOne({ email }, callback);
 }
 
-function createUser(db, email, password, callback) {
+function authUser(db, email, password, hash, callback) {
     const collection = db.collection('user');
-    bcrypt.hash(password, saltRounds, function (err, hash) {
-        // Store hash in your password DB.
-        collection.insertOne(
-            {
-                userId: v4(),
-                email,
-                password: hash,
-            },
-            function (err, userCreated) {
-                assert.equal(err, null);
-                callback(userCreated);
-            },
-        );
-    });
+    bcrypt.compare(password, hash, callback);
 }
 
 export default (req, res) => {
     if (req.method === 'POST') {
-        // signup
+        //login
         try {
-            assert.notEqual(null, req.body.email, 'Email required');
-            assert.notEqual(null, req.body.password, 'Password required');
+            assert.notStrictEqual(null, req.body.email, 'Email required');
+            assert.notStrictEqual(null, req.body.password, 'Password required');
         } catch (bodyError) {
-            res.status(403).json({ error: true, message: bodyError.message });
+            res.status(403).send(bodyError.message);
         }
 
-        // verify email does not exist already
         client.connect(function (err) {
-            assert.equal(null, err);
+            assert.strictEqual(null, err);
             console.log('Connected to MongoDB server =>');
             const db = client.db(dbName);
             const email = req.body.email;
@@ -61,10 +46,14 @@ export default (req, res) => {
                     return;
                 }
                 if (!user) {
-                    // proceed to Create
-                    createUser(db, email, password, function (creationResult) {
-                        if (creationResult.ops.length === 1) {
-                            const user = creationResult.ops[0];
+                    res.status(404).json({ error: true, message: 'User not found' });
+                    return;
+                } else {
+                    authUser(db, email, password, user.password, function (err, match) {
+                        if (err) {
+                            res.status(500).json({ error: true, message: 'Auth Failed' });
+                        }
+                        if (match) {
                             const token = jwt.sign(
                                 { userId: user.userId, email: user.email },
                                 jwtSecret,
@@ -74,17 +63,17 @@ export default (req, res) => {
                             );
                             res.status(200).json({ token });
                             return;
+                        } else {
+                            res.status(401).json({ error: true, message: 'Auth Failed' });
+                            return;
                         }
                     });
-                } else {
-                    // User exists
-                    res.status(403).json({ error: true, message: 'Email exists' });
-                    return;
                 }
             });
         });
     } else {
         // Handle any other HTTP method
-        res.status(200).json({ users: ['John Doe'] });
+        res.statusCode = 401;
+        res.end();
     }
 };
