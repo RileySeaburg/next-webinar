@@ -30,3 +30,6 @@ This platform is designed to run on your server or in the cloud.
 
 Interested in helping out or donating?
 Send me an email: [riley@rileyseaburg.com](mailto:riley@rileyseaburg.com)
+
+### License
+[MIT](https://github.com/RileySeaburg/next-webinar/blob/main/LICENSE)
