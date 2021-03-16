@@ -29,4 +29,4 @@ This platform is designed to run on your server or in the cloud.
 ### Support or Contact
 
 Interested in helping out or donating?
-Send me an email: [riley@rileyseaburg.com]('mailto:riley@rileyseaburg.com')
+Send me an email: [riley@rileyseaburg.com](mailto:riley@rileyseaburg.com)
