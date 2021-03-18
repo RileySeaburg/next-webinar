@@ -22,10 +22,10 @@ function Home() {
       </Head>
       <h1>Next Webinar</h1>
 
-      <h2>You are successfully logged in!</h2>
       {loggedIn && (
         <>
           <p>Welcome {data.email}!</p>
+          <h2>You are successfully logged in!</h2>
           <button
             onClick={() => {
               cookie.remove('token');
