@@ -1,7 +1,13 @@
-import '../styles/globals.css'
-
+import GlobalStyles from '../styles/GlobalStyles';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../theme';
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <Component {...pageProps} />
+    </ThemeProvider>
+  );
 }
 
 export default MyApp

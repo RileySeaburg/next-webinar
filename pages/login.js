@@ -1,16 +1,38 @@
 import React, { useState } from 'react'
 import Router from 'next/router';
+import NextLink from 'next/link'
 import cookie from 'js-cookie';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import {
+    Box,
+    Button,
+    Container,
+    Grid,
+    Link,
+    TextField,
+    Typography,
+    makeStyles
+} from '@material-ui/core';
+import Template from '../components/Template'
+import FacebookIcon from '../public/icons/Facebook';
+import GoogleIcon from '../public/icons/Google';
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        backgroundColor: theme.palette.background.dark,
+        height: '100%',
+        paddingBottom: theme.spacing(3),
+        paddingTop: theme.spacing(3)
+    }
+}));
 
 
 const Login = () => {
     const [loginError, setLoginError] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const classes = useStyles();
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -39,19 +61,159 @@ const Login = () => {
             });
     }
     return (
-        <div>
-            <Box component="span" m={1}>
-                <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                    <TextField id="email" label="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <br />
-                    <TextField id="password" label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-
-                    <br></br>
-                    <Button value="Submit" type="submit">Login</Button>
-                    {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
-                </form>
-            </Box>
-        </div>
+        <Template
+            className={classes.root}
+            title="Login"
+        >
+            <Box
+                display="flex"
+                flexDirection="column"
+                height="100%"
+                justifyContent="center">
+                <Container maxWidth="sm">
+                    <Formik
+                        initialValues={{
+                            email: 'demo@devias.io',
+                            password: 'Password123'
+                        }}
+                        validationSchema={Yup.object().shape({
+                            email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+                            password: Yup.string().max(255).required('Password is required')
+                        })} >
+                        {({
+                            errors,
+                            handleBlur,
+                            handleChange,
+                            handleSubmit,
+                            isSubmitting,
+                            touched,
+                            values
+                        }) => (
+                            <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmit}>
+                                    <Box mb={3}>
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="h2"
+                                        >
+                                            Sign in
+                  </Typography>
+                                        <Typography
+                                            color="textSecondary"
+                                            gutterBottom
+                                            variant="body2"
+                                        >
+                                            Sign in on the internal platform
+                  </Typography>
+                                    </Box>
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                    >
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            md={6}
+                                        >
+                                            <Button
+                                                color="primary"
+                                                fullWidth
+                                                startIcon={<FacebookIcon />}
+                                                onClick={handleSubmit}
+                                                size="large"
+                                                variant="contained"
+                                            >
+                                                Login with Facebook
+                    </Button>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            md={6}
+                                        >
+                                            <Button
+                                                fullWidth
+                                                startIcon={<GoogleIcon />}
+                                                onClick={handleSubmit}
+                                                size="large"
+                                                variant="contained"
+                                            >
+                                                Login with Google
+                    </Button>
+                                        </Grid>
+                                    </Grid>
+                                    <Box
+                                        mt={3}
+                                        mb={1}
+                                    >
+                                        <Typography
+                                            align="center"
+                                            color="textSecondary"
+                                            variant="body1"
+                                        >
+                                            or login with email address
+                  </Typography>
+                                    </Box>
+                                    <TextField
+                                        error={Boolean(touched.email && errors.email)}
+                                        fullWidth
+                                        helperText={touched.email && errors.email}
+                                        label="Email Address"
+                                        margin="normal"
+                                        name="email"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        type="email"
+                                        value={values.email}
+                                        variant="outlined"
+                                    />
+                                    <TextField
+                                        error={Boolean(touched.password && errors.password)}
+                                        fullWidth
+                                        helperText={touched.password && errors.password}
+                                        label="Password"
+                                        margin="normal"
+                                        name="password"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        type="password"
+                                        value={values.password}
+                                        variant="outlined"
+                                    />
+                                    <Box my={2}>
+                                        <Button
+                                            color="primary"
+                                            disabled={isSubmitting}
+                                            fullWidth
+                                            size="large"
+                                            type="submit"
+                                            variant="contained"
+                                        >
+                                            Sign in now
+                  </Button>
+                                    </Box>
+                                    <Typography
+                                        color="textSecondary"
+                                        variant="body1"
+                                    >
+                                        Don&apos;t have an account?
+                  {' '}
+                                        <NextLink href="/signup">
+                                            <Link
+                                                style={{ cursor: "pointer" }}
+                                                variant="h6"
+                                            >
+                                                Sign up
+</Link>
+                                        </NextLink>
+                                    </Typography>
+                                </form>
+                            </form>
+                        )}
+                    </Formik>
+                </Container>
+            </Box >
+        </Template >
     )
 }
 export default Login
