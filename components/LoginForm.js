@@ -6,7 +6,6 @@ import FacebookIcon from '../public/icons/Facebook';
 import GoogleIcon from '../public/icons/Google';
 import { Form, Formik, Field } from 'formik';
 import { object, string } from 'yup';
-import ErrorHandler from '../components/ErrorHandler';
 import {
   Box,
   Button,
@@ -18,15 +17,14 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
+
 const initialValues = {
   email: 'riley@rileyseaburg.com',
   password: 'Password123',
 };
 
 export default function LoginForm() {
-  const setLoginError = (error) => {
-    <ErrorHandler error={error} />;
-  };
+  const [error, setError] = useState(null);
   return (
     <div>
       <Card>
@@ -62,14 +60,21 @@ export default function LoginForm() {
                   return response.json();
                 })
                 .then((data) => {
-                  if (data && data.error) {
-                    setLoginError(data.message);
+                  if (data && data.error == true) {
+                    throw new Error(data.message);
                   }
                   if (data && data.token) {
                     // set cookie
                     cookie.set('token', data.token, { expires: 2 });
                     Router.push('/');
                   }
+                })
+                .catch((error) => {
+                  setError(error.message);
+                  console.log(error);
+                  setTimeout(() => {
+                    setError(null);
+                  }, 3000);
                 });
             }}
           >
@@ -94,7 +99,7 @@ export default function LoginForm() {
                 />
                 <br />
                 <Button type='submit'>Submit</Button>
-                <ErrorHandler />
+                <div>{error}</div>
               </Form>
             )}
           </Formik>
