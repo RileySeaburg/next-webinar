@@ -18,7 +18,7 @@ function Home() {
     <div>
       <Head>
         <title>Welcome to landing page</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
       <h1>Next Webinar</h1>
 
@@ -30,16 +30,17 @@ function Home() {
             onClick={() => {
               cookie.remove('token');
               revalidate();
-            }}>
+            }}
+          >
             Logout
           </button>
         </>
       )}
       {!loggedIn && (
         <>
-          <Link href="/login">Login</Link>
+          <Link href='/login'>Login</Link>
           <p>or</p>
-          <Link href="/signup">Sign Up</Link>
+          <Link href='/signup'>Sign Up</Link>
         </>
       )}
     </div>
