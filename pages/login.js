@@ -5,7 +5,7 @@ import LoginForm from '../components/LoginForm';
 
 const Login = () => {
   return (
-    <Template className='classes.root' title='Login'>
+    <Template title='Login'>
       <Box
         display='flex'
         flexDirection='column'

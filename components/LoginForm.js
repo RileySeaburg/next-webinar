@@ -5,8 +5,8 @@ import cookie from 'js-cookie';
 import FacebookIcon from '../public/icons/Facebook';
 import GoogleIcon from '../public/icons/Google';
 import { Form, Formik, Field } from 'formik';
-import * as Yup from 'yup';
-
+import { object, string } from 'yup';
+import ErrorHandler from '../components/ErrorHandler';
 import {
   Box,
   Button,
@@ -24,44 +24,77 @@ const initialValues = {
 };
 
 export default function LoginForm() {
-  function handleSubmit(e) {
-    e.preventDefault();
-    fetch('/api/auth', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    })
-      .then((r) => {
-        return r.json();
-      })
-      .then((data) => {
-        if (data && data.error) {
-          setLoginError(data.message);
-        }
-        if (data && data.token) {
-          // set cookie
-          cookie.set('token', data.token, { expires: 2 });
-          Router.push('/');
-        }
-      });
-  }
+  const setLoginError = (error) => {
+    <ErrorHandler error={error} />;
+  };
   return (
     <div>
       <Card>
         <CardContent>
-          <Formik initialValues={initialValues} onSubmit={() => {}}>
-            {({ values }) => (
-              <Form>
-                <Field name='email' as={TextField} label='Email' />
+          <Formik
+            // Required to set Formik State
+            initialValues={initialValues}
+            validationSchema={object({
+              email: string()
+                .email('Must be a valid email')
+                .min(6)
+                .max(255)
+                .required('Email is required'),
+              password: string()
+                .min(6)
+                .max(255)
+                .required('Password is required'),
+            })}
+            // Get's Called when first submitted.
+            // function (data, {destructured objects}) {do something here}
+            onSubmit={async ({ email, password }) => {
+              await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  email,
+                  password,
+                }),
+              })
+                .then((response) => {
+                  return response.json();
+                })
+                .then((data) => {
+                  if (data && data.error) {
+                    setLoginError(data.message);
+                  }
+                  if (data && data.token) {
+                    // set cookie
+                    cookie.set('token', data.token, { expires: 2 });
+                    Router.push('/');
+                  }
+                });
+            }}
+          >
+            {({ values, handleSubmit, handleChange, handleBlur }) => (
+              <Form onSubmit={handleSubmit}>
+                <Field
+                  name='email'
+                  as={TextField}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.email}
+                  label='Email'
+                />
                 <br />
-                <Field name='password' as={TextField} label='Password' />
-                <pre>{JSON.stringify(values, null, 4)}</pre>
-                <Button type='Submit'>Submit</Button>
+                <Field
+                  name='password'
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
+                  as={TextField}
+                  label='Password'
+                />
+                <br />
+                <Button type='submit'>Submit</Button>
+                <ErrorHandler />
               </Form>
             )}
           </Formik>
