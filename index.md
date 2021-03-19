@@ -1,23 +1,24 @@
-## Welcome to The Next Webinar Platform
+# Welcome to The Next Webinar Platform
 
 This is an open source self hosted webinar platform. 
 
 This platform is designed to run on your server or in the cloud. 
 
 
-### Planned Features
-- CRM Integration
+## Planned Features
+### CRM Integration
  - Hubspot
  - SuiteCRM
  - Mautic
-- Webinar
+### Webinar
  - Live
  - On Demand
  - Pre Recorded
 - Livechat
 - Transactional email
+### UX/UI
 - MaterialUI Framework
- - Fimga files will be linked
+- Fimga files will be linked
 
 ### Coded Features
 - Nothing yet!
@@ -25,6 +26,7 @@ This platform is designed to run on your server or in the cloud.
 ### Finished Features
 
 - Authentication 
+- MaterialUI Framework
 
 ### Support or Contact
 
