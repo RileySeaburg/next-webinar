@@ -10,12 +10,14 @@ This platform is designed to run on your server or in the cloud.
  - Hubspot
  - SuiteCRM
  - Mautic
+ 
 ### Webinar
  - Live
  - On Demand
  - Pre Recorded
 - Livechat
 - Transactional email
+
 ### UX/UI
 - MaterialUI Framework
 - Fimga files will be linked
