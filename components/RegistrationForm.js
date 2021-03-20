@@ -5,12 +5,14 @@ import cookie from 'js-cookie';
 import FacebookIcon from '../public/icons/Facebook';
 import GoogleIcon from '../public/icons/Google';
 import { Form, Formik, Field } from 'formik';
-import { object, string } from 'yup';
+import * as Yup from 'yup';
+import 'yup-phone';
 import {
   Box,
   Button,
   Checkbox,
   Container,
+  FormHelperText,
   Grid,
   Link as UILink,
   TextField,
@@ -24,6 +26,7 @@ const initialValues = {
   email: 'riley@rileyseaburg.com',
   phone: '1-800-876-5309',
   password: 'Password123',
+  policy: false,
 };
 
 export default function LoginForm() {
@@ -34,12 +37,26 @@ export default function LoginForm() {
         <Formik
           // Required to set Formik State
           initialValues={initialValues}
-          validationSchema={object({
-            password: string().min(6).max(255).required('Password is required'),
+          validationSchema={Yup.object({
+            email: Yup.string()
+              .email('Must be a valid email')
+              .max(255)
+              .required('Email is required'),
+            firstName: Yup.string().max(255).required('First name is required'),
+            lastName: Yup.string().max(255).required('Last name is required'),
+            phone: Yup.string().phone(
+              'US',
+              true,
+              'A valid ${path} is required'
+            ),
+            password: Yup.string()
+              .max(255)
+              .required('A valid password is required'),
+            policy: Yup.boolean().oneOf([true], 'This field must be checked'),
           })}
           // Get's Called when first submitted.
           // function (data, {destructured objects}) {do something here}
-          onSubmit={async ({ email, password }) => {
+          onSubmit={async ({ email, password, firstName, lastName, phone }) => {
             await fetch('/api/users', {
               method: 'POST',
               headers: {
@@ -48,6 +65,9 @@ export default function LoginForm() {
               body: JSON.stringify({
                 email,
                 password,
+                firstName,
+                lastName,
+                phone,
               }),
             })
               .then((response) => {
@@ -72,7 +92,14 @@ export default function LoginForm() {
               });
           }}
         >
-          {({ values, handleSubmit, handleChange, handleBlur, touched }) => (
+          {({
+            values,
+            handleSubmit,
+            handleChange,
+            handleBlur,
+            touched,
+            errors,
+          }) => (
             <Form onSubmit={handleSubmit}>
               <Box mb={3}>
                 <Typography color='textPrimary' variant='h2'>
@@ -83,6 +110,8 @@ export default function LoginForm() {
                 </Typography>
               </Box>
               <Field
+                error={Boolean(touched.firstName && errors.firstName)}
+                helperText={touched.firstName && errors.firstName}
                 name='firstName'
                 fullWidth
                 as={TextField}
@@ -92,6 +121,8 @@ export default function LoginForm() {
                 label='First Name'
               />
               <Field
+                error={Boolean(touched.lastName && errors.lastName)}
+                helperText={touched.lastName && errors.lastName}
                 name='lastName'
                 fullWidth
                 as={TextField}
@@ -101,6 +132,8 @@ export default function LoginForm() {
                 label='Last Name'
               />
               <Field
+                error={Boolean(touched.email && errors.email)}
+                helperText={touched.email && errors.email}
                 name='email'
                 as={TextField}
                 fullWidth
@@ -110,6 +143,8 @@ export default function LoginForm() {
                 label='Email'
               />
               <Field
+                error={Boolean(touched.phone && errors.phone)}
+                helperText={touched.phone && errors.phone}
                 name='phone'
                 fullWidth
                 as={TextField}
@@ -120,6 +155,8 @@ export default function LoginForm() {
               />
               <br />
               <Field
+                error={Boolean(touched.password && errors.password)}
+                helperText={touched.password && errors.password}
                 name='password'
                 fullWidth
                 onChange={handleChange}
@@ -144,6 +181,9 @@ export default function LoginForm() {
                   </Link>
                 </Typography>
               </Box>
+              {Boolean(touched.policy && errors.policy) && (
+                <FormHelperText error>{errors.policy}</FormHelperText>
+              )}
               <Button type='submit'>Submit</Button>
               <div>{error}</div>
             </Form>
